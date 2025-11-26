@@ -6,10 +6,10 @@ import { fileURLToPath } from 'url';
 import fs from 'fs';
 
 // Importar clases
-import Ball from './Ball.js';
-import Player from './Player.js';
-import State from './State.js';
-import Room from './Room.js';
+import Ball from './src/Ball.js';
+import Player from './src/Player.js';
+import State from './src/State.js';
+import Room from './src/Room.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -18,8 +18,8 @@ const app = express();
 const http = httpModule.createServer(app);
 const io = new SocketIO(http);
 
-const SERVER_CONFIG = JSON.parse(fs.readFileSync(path.join(__dirname, 'server_config.json'), 'utf-8'));
-const GAME_CONFIG = JSON.parse(fs.readFileSync(path.join(__dirname, 'game_config.json'), 'utf-8'));
+const SERVER_CONFIG = JSON.parse(fs.readFileSync(path.join(__dirname, './config/server_config.json'), 'utf-8'));
+const GAME_CONFIG = JSON.parse(fs.readFileSync(path.join(__dirname, './config/game_config.json'), 'utf-8'));
 
 app.use(express.static('public'));
 
@@ -110,6 +110,9 @@ io.on('connection', (socket) => {
     }
   });
 });
+
+
+// ? Game logic
 
 function startGameLoop(room) {
   const currentRoom = rooms[room];
