@@ -1,0 +1,117 @@
+/* Reset y box-sizing */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  background: #1a1a1a; /* Fondo oscuro */
+  color: #e0e0e0; /* Texto claro */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+h1 {
+  font-size: 2rem;
+  margin-bottom: 20px;
+  text-align: center;
+  color: #ffffff;
+}
+
+/* Barra superior con inputs e info */
+#controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  width: 100%;
+  max-width: 600px;
+  margin-bottom: 20px;
+  padding: 10px 15px;
+  border-bottom: 1px solid #333;
+  background: #222; /* barra ligeramente más clara */
+  border-radius: 8px;
+}
+
+/* Inputs */
+input {
+  flex: 1 1 120px;
+  padding: 8px 12px;
+  border: 1px solid #555;
+  border-radius: 5px;
+  font-size: 14px;
+  background: #2a2a2a;
+  color: #e0e0e0;
+}
+
+input::placeholder {
+  color: #aaa;
+}
+
+/* Botones */
+button {
+  padding: 8px 20px;
+  border: none;
+  border-radius: 5px;
+  background: #555;
+  color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+button:hover {
+  background: #777;
+}
+
+button:disabled {
+  background: #444;
+  cursor: not-allowed;
+}
+
+/* Caja central del juego */
+#game-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #222; /* Fondo oscuro para la caja */
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 20px;
+  width: 100%;
+  max-width: 800px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+/* Canvas */
+canvas {
+  width: 100%;
+  height: auto;
+  background: #111; /* Fondo del juego más oscuro */
+  border: 2px solid #555;
+  border-radius: 5px;
+  display: block;
+  margin-top: 10px;
+}
+
+/* Info encima del canvas */
+#info {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #f0f0f0;
+  margin-bottom: 10px;
+}
+
+/* Estado debajo del canvas */
+#status {
+  margin-top: 12px;
+  font-size: 0.95rem;
+  color: #aaa;
+  text-align: center;
+  width: 100%;
+}

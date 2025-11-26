@@ -1,0 +1,9 @@
+{
+  "width": 800,
+  "height": 600,
+  "paddleWidth": 10,
+  "paddleHeight": 100,
+  "ballSize": 10,
+  "paddleSpeed": 5,
+  "ballSpeed": 4
+}

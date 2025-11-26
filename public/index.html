@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Multiplayer Pong</title>
+  <link rel="stylesheet" href="styles.css">
+<body>
+  <h1>Multiplayer Pong</h1>
+
+  <div id="controls">
+    <input type="text" id="name" placeholder="Your nickname" maxlength="15">
+    <input type="text" id="room" placeholder="Room name" maxlength="15">
+    <button id="connect">Connect</button>
+    <div id="info">Waiting for players...</div>
+  </div>
+
+  <div id="game-container">
+    <canvas id="canvas" width="800" height="600"></canvas>
+    <div id="status"></div>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="./index.js"></script>
+</body>
+</html>
