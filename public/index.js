@@ -111,5 +111,4 @@ function draw(gameState) {
     ctx.beginPath();
     ctx.arc(gameState.ball.x, gameState.ball.y, config.ballSize / 2, 0, Math.PI * 2);
     ctx.fill();
-
 }

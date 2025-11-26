@@ -1,3 +1,4 @@
+// * Server
 import express from 'express';
 import httpModule from 'http';
 import { Server as SocketIO } from 'socket.io';
@@ -5,7 +6,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
 
-// Importar clases
+// * Game
 import Ball from './src/Ball.js';
 import Player from './src/Player.js';
 import State from './src/State.js';
@@ -18,15 +19,19 @@ const app = express();
 const http = httpModule.createServer(app);
 const io = new SocketIO(http);
 
+// * Game config
 const SERVER_CONFIG = JSON.parse(fs.readFileSync(path.join(__dirname, './config/server_config.json'), 'utf-8'));
 const GAME_CONFIG = JSON.parse(fs.readFileSync(path.join(__dirname, './config/game_config.json'), 'utf-8'));
 
+// ? Serve Client
 app.use(express.static('public'));
 
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
+
+// ? Connection logic
 const rooms = {};
 
 io.on('connection', (socket) => {
@@ -34,15 +39,30 @@ io.on('connection', (socket) => {
 
   socket.on('join_room', ({ name, room }) => {
     if (!rooms[room]) {
-      const ball = new Ball(
-        GAME_CONFIG.width / 2,
-        GAME_CONFIG.height / 2,
-        GAME_CONFIG.ballSpeed,
-        GAME_CONFIG.ballSpeed
-      );
 
-      const player1 = new Player(GAME_CONFIG.height / 2 - GAME_CONFIG.paddleHeight / 2, 0);
-      const player2 = new Player(GAME_CONFIG.height / 2 - GAME_CONFIG.paddleHeight / 2, 0);
+      const ball = new Ball({
+        x: GAME_CONFIG.width / 2,
+        y: GAME_CONFIG.height / 2,
+        speed: GAME_CONFIG.ballSpeed,
+        arenaWidth: GAME_CONFIG.width,
+        arenaHeight: GAME_CONFIG.height
+      });
+
+      // * P1
+      const player1 = new Player({
+        y: GAME_CONFIG.height / 2,
+        arenaHeight: GAME_CONFIG.height
+      })
+        .setSpeed(GAME_CONFIG.paddleSpeed)
+        .setPaddleHeight(GAME_CONFIG.paddleHeight);
+
+      // * P2
+      const player2 = new Player({
+        y: GAME_CONFIG.height / 2,
+        arenaHeight: GAME_CONFIG.height
+      })
+        .setSpeed(GAME_CONFIG.paddleSpeed)
+        .setPaddleHeight(GAME_CONFIG.paddleHeight);
 
       const state = new State(ball, player1, player2);
       rooms[room] = new Room([], state, false);
@@ -56,6 +76,8 @@ io.on('connection', (socket) => {
     }
 
     const playerNumber = currentRoom.players.length + 1;
+
+    // ? Adding player to room.
     currentRoom.players.push({
       id: socket.id,
       name,
@@ -77,6 +99,7 @@ io.on('connection', (socket) => {
     }
   });
 
+  // ? Game Signals
   socket.on('move_paddle', (direction) => {
     if (!socket.room || !socket.playerNumber) return;
 
@@ -85,11 +108,8 @@ io.on('connection', (socket) => {
 
     const player = socket.playerNumber === 1 ? currentRoom.state.p1 : currentRoom.state.p2;
 
-    if (direction === 'up') {
-      player.y = Math.max(0, player.y - GAME_CONFIG.paddleSpeed);
-    } else if (direction === 'down') {
-      player.y = Math.min(GAME_CONFIG.height - GAME_CONFIG.paddleHeight, player.y + GAME_CONFIG.paddleSpeed);
-    }
+    player.move(direction);
+
   });
 
   socket.on('disconnect', () => {
@@ -111,9 +131,7 @@ io.on('connection', (socket) => {
   });
 });
 
-
 // ? Game logic
-
 function startGameLoop(room) {
   const currentRoom = rooms[room];
   if (!currentRoom) return;
@@ -129,11 +147,11 @@ function startGameLoop(room) {
   }, 1000 / 60);
 }
 
+// ? Game Logic
 function updateGame(room) {
   const { ball, p1, p2 } = room.state;
 
-  ball.x += ball.dx;
-  ball.y += ball.dy;
+  ball.update();
 
   if (ball.y <= 0 || ball.y >= GAME_CONFIG.height - GAME_CONFIG.ballSize) {
     ball.dy *= -1
@@ -154,24 +172,16 @@ function updateGame(room) {
     ball.y <= p2.y + GAME_CONFIG.paddleHeight) {
     ball.last = 2;
     ball.dx = -Math.abs(ball.dx)
-
   }
 
   if (ball.x <= 0) {
     p2.score++;
-    resetBall(ball);
+    ball.reset();
   } else if (ball.x >= GAME_CONFIG.width) {
     p1.score++;
-    resetBall(ball);
+    ball.reset();
   }
-}
 
-function resetBall(ball) {
-  ball.x = GAME_CONFIG.width / 2;
-  ball.y = GAME_CONFIG.height / 2;
-  ball.dx = GAME_CONFIG.ballSpeed * (Math.random() > 0.5 ? 1 : -1);
-  ball.dy = GAME_CONFIG.ballSpeed * (Math.random() > 0.5 ? 1 : -1);
-  ball.last = 0;
 }
 
 http.listen(SERVER_CONFIG.port, () => {
